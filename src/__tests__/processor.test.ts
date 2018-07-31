@@ -7,13 +7,12 @@ describe('Pipeline', () => {
       p.source([{ a: 1 }, { a: 2 }]);
       p.source({ b: 1 });
 
-      p.transform(obj => ({ ...obj, a: obj.a ? obj.a + 10 : 1 }));
-      p.transform(obj => ({ ...obj, b: obj.b ? obj.b + 10 : 1 }));
+      // @ts-ignore
+      p.transform(({ a, b }) => ({ a: a + 10, b }));
+      // @ts-ignore
+      p.transform(({ a, b }) => ({ a, b: b + 10 }));
 
-      p.destination(obj => {
-        console.log(obj);
-        return obj;
-      });
+      p.destination(obj => console.log(obj));
     });
 
     Processor.run(pipeline);

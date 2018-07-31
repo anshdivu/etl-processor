@@ -1,7 +1,7 @@
 export type Data = object;
 export type Source = Array<Data>;
 export type Transformer = (obj: Data) => Data;
-export type Destination = (obj: Data) => Data;
+export type Destination = (obj: Data) => void;
 
 export default class Pipeline {
   sources: Array<Source>;
