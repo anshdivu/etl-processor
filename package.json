@@ -8,6 +8,9 @@
     "build": "tsc",
     "test": "jest --watch"
   },
+  "dependencies": {
+    "rxjs": "^6.2.2"
+  },
   "devDependencies": {
     "@types/jest": "^23.3.1",
     "jest": "^23.4.2",

@@ -1,10 +1,15 @@
-export type Data = object;
-export type Source = Array<Data>;
-export type Transformer = (obj: Data) => Data;
+import { Observable, isObservable, of } from 'rxjs';
+
+export type Data<T> = T;
+export type Source<T> = Observable<Data<T>>;
+export type Transformer<R, T> = (obj: Data<R>) => Data<T>;
 export type Destination = (obj: Data) => void;
+export interface SourceInterface<T> {
+  observe(): Observable<T>;
+}
 
 export default class Pipeline {
-  sources: Array<Source>;
+  sources: Array<Source<T>>;
   transformers: Array<Transformer>;
   destinations: Array<Destination>;
 
@@ -20,8 +25,8 @@ export default class Pipeline {
     this.destinations = [];
   }
 
-  source = (rawData: object | Source) => {
-    const data = Array.isArray(rawData) ? rawData : [rawData];
+  source = <T>(rawData: T | Array<T> | Observable<T>) => {
+    const data = toObservable<T>(rawData);
     this.sources.push(data);
     return this;
   };
@@ -35,4 +40,22 @@ export default class Pipeline {
     this.destinations.push(callBack);
     return this;
   };
+}
+
+function toObservable<T>(
+  rawData: T | T[] | Observable<T> | SourceInterface<T>
+): Observable<T> {
+  if (rawData.observe instanceof Function) {
+    return rawData.observe();
+  }
+
+  if (isObservable(rawData)) {
+    return rawData;
+  }
+
+  if (Array.isArray(rawData)) {
+    return of(...rawData);
+  }
+
+  return of(rawData);
 }
